@@ -1,0 +1,29 @@
+FROM node:14.17.0-alpine3.13
+
+WORKDIR /usr/app
+
+ARG NODE_ENV
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG ACCESS_TOKEN_SECRET
+ARG REFRESH_TOKEN_SECRET
+
+ENV NODE_ENV ${NODE_ENV}
+ENV HTTP_PROXY ${HTTP_PROXY}
+ENV HTTPS_PROXY ${HTTPS_PROXY}
+ENV ACCESS_TOKEN_SECRET ${ACCESS_TOKEN_SECRET}
+ENV REFRESH_TOKEN_SECRET ${REFRESH_TOKEN_SECRET}
+
+ADD packages/jwt-demo-api packages/jwt-demo-api
+ADD package.json package.json
+ADD packages/jwt-demo-logs packages/jwt-demo-logs
+
+RUN if [[ -z "$HTTP_PROXY" ]] ; then echo HTTP_PROXY not provided ; else yarn config set proxy ${HTTP_PROXY} ; fi
+RUN if [[ -z "$HTTPS_PROXY" ]] ; then echo HTTPS_PROXY not provided ; else yarn config set proxy ${HTTPS_PROXY} ; fi
+
+RUN yarn install --pure-lockfile --production
+
+# install init system: https://github.com/Yelp/dumb-init
+RUN apk add dumb-init
+
+CMD ["/usr/bin/dumb-init", "yarn", "workspace", "jwt-demo-api", "run", "start"]

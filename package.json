@@ -1,0 +1,34 @@
+{
+  "name": "jwt-demo",
+  "version": "1.0.0",
+  "description": "JWT Demo app",
+  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "yarn run dev:refresh",
+    "stop": "yarn run dev:down",
+
+    "dev:start": "yarn run dev:refresh",
+    "dev:start:wt": "yarn run dev:refresh:wt",
+    "dev:up": "docker compose -f ./docker/docker-compose.dev.yml up",
+    "dev:up:wt": "wt -w 0 cmd.exe /k \"docker compose -f ./docker/docker-compose.dev.yml up\"",
+    "dev:rebuild": "yarn run dev:down && bash ./utils/server-dev-rebuild.sh",
+    "dev:down": "docker compose -f ./docker/docker-compose.dev.yml down --volumes --remove-orphans",
+    "dev:refresh": "yarn run dev:rebuild && yarn run dev:up",
+    "dev:refresh:wt": "yarn run dev:rebuild && yarn run dev:up:wt",
+
+    "prod:start": "yarn run prod:refresh",
+    "prod:up": "docker compose -f ./docker/docker-compose.prod.yml up",
+    "prod:rebuild": "yarn run prod:down && bash ./utils/server-prod-rebuild.sh",
+    "prod:down": "docker compose -f ./docker/docker-compose.prod.yml down --volumes --remove-orphans",
+    "prod:refresh": "yarn run prod:rebuild && yarn run prod:up",
+
+    "clean": "node ./utils/packages-exec.js rm -rf node_modules && rm -rf node_modules"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

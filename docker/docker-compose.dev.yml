@@ -1,0 +1,95 @@
+services:
+
+  jwt-demo-reverse-proxy:
+    container_name: jwt-demo-reverse-proxy
+    build:
+      context: ../
+      dockerfile: ./packages/jwt-demo-reverse-proxy/Dockerfile
+    ports:
+      - 9090:80
+    networks:
+      - intranet
+
+
+  jwt-demo-api:
+    container_name: jwt-demo-api
+    build:
+      context: ../
+      dockerfile: ./packages/jwt-demo-api/Dockerfile.dev
+      args:
+        - NODE_ENV
+        - HTTP_PROXY
+        - HTTPS_PROXY
+        - ACCESS_TOKEN_SECRET
+    volumes:
+      # Anonymous volumes to prevent connection to windows node_modules folder (aka: bookmark volumes)
+      - /usr/app/node_modules
+      - /usr/app/packages/jwt-demo-api/node_modules
+      # host volume
+      - ../packages/jwt-demo-api:/usr/app/packages/jwt-demo-api
+      # dependency volumes
+      - ../packages/jwt-demo-logs:/usr/app/packages/jwt-demo-logs
+    networks:
+      - intranet
+
+
+  jwt-demo-auth:
+    container_name: jwt-demo-auth
+    build:
+      context: ../
+      dockerfile: ./packages/jwt-demo-auth/Dockerfile.dev
+      args:
+        - NODE_ENV
+        - HTTP_PROXY
+        - HTTPS_PROXY
+        - ACCESS_TOKEN_SECRET
+        - REFRESH_TOKEN_SECRET
+    volumes:
+      # Anonymous volumes to prevent connection to windows node_modules folder (aka: bookmark volumes)
+      - /usr/app/node_modules
+      - /usr/app/packages/jwt-demo-auth/node_modules
+      # host volume
+      - ../packages/jwt-demo-auth:/usr/app/packages/jwt-demo-auth
+      # dependency volumes
+      - ../packages/jwt-demo-logs:/usr/app/packages/jwt-demo-logs
+    networks:
+      - intranet
+
+
+  jwt-demo-frontend:
+    container_name: jwt-demo-frontend
+    build:
+      context: ../
+      dockerfile: ./packages/jwt-demo-frontend/Dockerfile.dev
+    volumes:
+      # Anonymous volumes to prevent connection to windows node_modules folder (aka: bookmark volumes)
+      - /usr/app/node_modules
+      - /usr/app/packages/jwt-demo-frontend/node_modules
+      # host volume
+      - ../packages/jwt-demo-frontend:/usr/app/packages/jwt-demo-frontend
+    networks:
+      - intranet
+
+
+  # https://hub.docker.com/_/redis
+  jwt-demo-redis:
+    image: redis:6.0.10-alpine
+    container_name: jwt-demo-redis
+    networks:
+      - intranet
+
+
+  # https://github.com/joeferner/redis-commander
+  jwt-demo-redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: jwt-demo-redis-commander
+    environment:
+      - REDIS_HOSTS=local:jwt-demo-redis:6379
+    ports:
+      - 9094:8081
+    networks:
+      - intranet
+
+
+networks:
+  intranet:
