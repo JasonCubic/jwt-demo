@@ -61,7 +61,7 @@ To verify the linting isn't fixed yet: `prettier --config .prettierrc.json --che
 
 ### To see the differences prettier is looking for
 
-* launch the docker compose interactive mega linter: `yarn run local:lint:docker:compose`
+* launch the docker compose interactive mega linter: `yarn run local:lint:interactive`
 * goto the folder /tmp/lint
 * run `cat myfile.js | prettier --parser babel | diff myfile.js -`
 * compare the difference
