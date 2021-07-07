@@ -11,7 +11,12 @@ FILEIO_REPORTER: false
 
 DISABLE_LINTERS:
   - JAVASCRIPT_STANDARD # this is a competing js linter to airbnb that named itself "standard"
+  - EDITORCONFIG_EDITORCONFIG_CHECKER # this linter unable to allow unset line endings crlf/lf
   # - GIT_GIT_DIFF # fails if the "git diff --check" command returns anything
+
+# more info on the EDITORCONFIG_EDITORCONFIG_CHECKER crlf/lf line ending issue:
+# * https://github.com/editorconfig-checker/editorconfig-checker/issues/164
+# * https://github.com/editorconfig/editorconfig/issues/226
 
 # skip the frontend frameworks temporary build folder that has some html in it
 HTML_HTMLHINT_FILTER_REGEX_EXCLUDE: \.nuxt/
