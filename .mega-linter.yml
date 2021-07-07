@@ -11,14 +11,15 @@ FILEIO_REPORTER: false
 
 DISABLE_LINTERS:
   - JAVASCRIPT_STANDARD # this is a competing js linter to airbnb that named itself "standard"
-  - JSON_PRETTIER # prettier is a code formatter that sometimes conflicts with airbnb styles
-  - YAML_PRETTIER # prettier is a code formatter that sometimes conflicts with airbnb styles
   # - GIT_GIT_DIFF # fails if the "git diff --check" command returns anything
+
+# skip the frontend frameworks temporary build folder that has some html in it
+HTML_HTMLHINT_FILTER_REGEX_EXCLUDE: \.nuxt/
 
 # mega linter just needs to verify we have at least one .eslintrc.js file somewhere
 JAVASCRIPT_ES_RULES_PATH: /packages/jwt-demo-api/
 
-# we skip minified javascript and the frontend frameworks temporary build folder
+# skip minified javascript and the frontend frameworks temporary build folder
 JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: (.*\.min\.js|\.nuxt/)
 
 # the import resolution checking is done by eslint-plugin-import at dev time
