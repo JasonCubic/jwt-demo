@@ -40,6 +40,17 @@ function handleAuthRouteError(error, redirect) {
   return null;
 }
 
+function handleConsoleLogDetailedAxiosError(error) {
+  if (error.response) {
+    console.log('error.response: ', error.response);
+  } else if (error.request) {
+    console.log('error.request', error.request);
+  } else {
+    console.log('Error', error.message);
+  }
+  console.log('error.config', error.config);
+}
+
 function handleAxiosError({ $axios, store, redirect }) {
   $axios.onError(async (error) => {
     const isRouteForAuthService = (error?.config?.url ?? '').toLowerCase().startsWith('/jwtdemo/auth');
@@ -48,28 +59,14 @@ function handleAxiosError({ $axios, store, redirect }) {
     }
     const isStillAnErrorAfterRefreshingTheToken = error?.config?.headers?.secondAttempt === true;
     if (isStillAnErrorAfterRefreshingTheToken) {
-      if (error.response) {
-        console.log('error.response: ', error.response);
-      } else if (error.request) {
-        console.log('error.request', error.request);
-      } else {
-        console.log('Error', error.message);
-      }
-      console.log('error.config', error.config);
+      handleConsoleLogDetailedAxiosError(error);
       console.log('unable to access resource even with a refreshed token');
       redirect('/login');
       return error;
     }
     const isErrorNotForUnauthorizedAccess = error?.response?.status !== 401;
     if (isErrorNotForUnauthorizedAccess) {
-      if (error.response) {
-        console.log('error.response: ', error.response);
-      } else if (error.request) {
-        console.log('error.request', error.request);
-      } else {
-        console.log('Error', error.message);
-      }
-      console.log('error.config', error.config);
+      handleConsoleLogDetailedAxiosError(error);
       return error;
     }
     const newAccessTokenResponse = await getRefreshedAccessTokenResponse($axios);

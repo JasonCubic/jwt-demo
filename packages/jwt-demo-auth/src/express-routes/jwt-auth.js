@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const log = require('jwt-demo-logs');
 const { addRefreshToken, deleteRefreshToken, refreshTokenExists } = require('../redis/interface');
 const { verifyAuthentication } = require('../fake-authn/interface');
+const { verifyRefreshToken } = require('../express/middleware');
 const config = require('../config/config');
 const packageJson = require('../../../../package.json');
 
@@ -34,50 +35,28 @@ async function handleLoginRoute(req, res) {
   res.status(200).json({ accessToken });
 }
 
-function handleLogoutRoute(req, res) {
-  const refreshToken = req?.cookies?.rt ?? '';
-  if (!refreshToken || typeof refreshToken.valueOf() !== 'string' || refreshToken.length === 0) {
-    res.sendStatus(401);
-    return;
-  }
-  jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET, async (err, tokenInfo) => {
-    if (err) {
-      res.sendStatus(403);
-      return;
-    }
-    const { name } = tokenInfo;
-    await deleteRefreshToken(name, refreshToken);
-    res.sendStatus(204);
-  });
+async function handleLogoutRoute(req, res) {
+  const { refreshTokenInfo, refreshToken } = res?.locals ?? {};
+  await deleteRefreshToken(refreshTokenInfo?.name ?? '', refreshToken);
+  res.sendStatus(204);
 }
 
-function handleRefreshAccessTokenRoute(req, res) {
-  const refreshToken = req?.cookies?.rt ?? '';
-  if (!refreshToken || typeof refreshToken.valueOf() !== 'string' || refreshToken.length === 0) {
-    res.sendStatus(401);
+async function handleRefreshAccessTokenRoute(req, res) {
+  const { refreshTokenInfo, refreshToken } = res?.locals ?? {};
+  const isTokenPresent = await refreshTokenExists(refreshTokenInfo?.name ?? '', refreshToken);
+  if (isTokenPresent === false) {
+    res.sendStatus(403);
     return;
   }
-  jwt.verify(refreshToken, config.REFRESH_TOKEN_SECRET, async (err, tokenInfo) => {
-    if (err) {
-      res.sendStatus(401);
-      return;
-    }
-    const { name } = tokenInfo;
-    const isTokenPresent = await refreshTokenExists(name, refreshToken);
-    if (isTokenPresent === false) {
-      res.sendStatus(403);
-      return;
-    }
-    const accessToken = generateAccessToken({ name: tokenInfo.name, displayName: tokenInfo.displayName });
-    res.json({ accessToken });
-  });
+  const accessToken = generateAccessToken({ name: refreshTokenInfo.name, displayName: refreshTokenInfo.displayName });
+  res.json({ accessToken });
 }
 
 const router = express.Router();
 
 router.get('/version', handleVersionRoute);
 router.post('/login', express.json(), express.urlencoded({ extended: false }), handleLoginRoute);
-router.delete('/logout', cookieParser(), handleLogoutRoute);
-router.post('/refresh-token', cookieParser(), handleRefreshAccessTokenRoute);
+router.delete('/logout', cookieParser(), verifyRefreshToken, handleLogoutRoute);
+router.post('/refresh-token', cookieParser(), verifyRefreshToken, handleRefreshAccessTokenRoute);
 
 module.exports = router;

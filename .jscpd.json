@@ -12,6 +12,7 @@
     "**/report/**",
     "**/*.svg",
     "**/.nuxt/**",
-    "**/.eslintrc.js"
+    "**/.eslintrc.js",
+    "**/config/config.js"
   ]
 }

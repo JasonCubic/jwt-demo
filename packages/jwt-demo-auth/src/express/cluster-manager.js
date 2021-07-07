@@ -4,6 +4,7 @@ const log = require('jwt-demo-logs');
 const webserverWorker = require('./web-server-worker');
 const config = require('../config/config');
 
+// jscpd:ignore-start
 (() => {
   if (cluster.isMaster) {
     for (let j = 0; j < Math.min(numCPUs, config.MAX_CLUSTER_FORKS); j += 1) {
@@ -23,3 +24,4 @@ const config = require('../config/config');
     webserverWorker(cluster.worker);
   }
 })();
+// jscpd:ignore-end

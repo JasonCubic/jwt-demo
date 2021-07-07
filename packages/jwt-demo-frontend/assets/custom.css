@@ -1,5 +1,8 @@
 /* https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/ */
-.jwtdemo-site, #__nuxt, #__layout, .default-layout {
+.jwtdemo-site,
+#__nuxt,
+#__layout,
+.default-layout {
   display: flex;
   min-height: 100vh;
   flex-direction: column;

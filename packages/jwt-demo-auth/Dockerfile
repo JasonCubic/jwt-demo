@@ -14,16 +14,15 @@ ENV HTTPS_PROXY ${HTTPS_PROXY}
 ENV ACCESS_TOKEN_SECRET ${ACCESS_TOKEN_SECRET}
 ENV REFRESH_TOKEN_SECRET ${REFRESH_TOKEN_SECRET}
 
-ADD packages/jwt-demo-auth packages/jwt-demo-auth
-ADD package.json package.json
-ADD packages/jwt-demo-logs packages/jwt-demo-logs
+COPY packages/jwt-demo-auth packages/jwt-demo-auth
+COPY package.json package.json
+COPY packages/jwt-demo-logs packages/jwt-demo-logs
 
-RUN if [[ -z "$HTTP_PROXY" ]] ; then echo HTTP_PROXY not provided ; else yarn config set proxy ${HTTP_PROXY} ; fi
-RUN if [[ -z "$HTTPS_PROXY" ]] ; then echo HTTPS_PROXY not provided ; else yarn config set proxy ${HTTPS_PROXY} ; fi
-
-RUN yarn install --pure-lockfile --production
+RUN yarn install --pure-lockfile --production --proxy "${HTTP_PROXY}" --https-proxy "${HTTPS_PROXY}" \
+&& yarn cache clean
 
 # install init system: https://github.com/Yelp/dumb-init
-RUN apk add dumb-init
+# hadolint ignore=DL3018
+RUN apk --no-cache add dumb-init
 
 CMD ["/usr/bin/dumb-init", "yarn", "workspace", "jwt-demo-auth", "run", "start"]
