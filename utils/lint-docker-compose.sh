@@ -6,7 +6,7 @@ docker compose -f ./docker/docker-compose.lint.yml build --no-cache
 
 echo
 echo "To manually trigger linting from inside the container run: /entrypoint.sh"
-echo "The volume containg the project code is located at: /tmp/lint"
+echo "The volume containing the project code is located at: /tmp/lint"
 echo
 
 docker-compose -f ./docker/docker-compose.lint.yml run --rm mega-linter-api
