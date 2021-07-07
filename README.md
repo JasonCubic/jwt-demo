@@ -35,6 +35,7 @@ require('crypto').randomBytes(64).toString('hex');
 ## linting info
 
 * a diff of the mega linter setup but before any lint fixes: <https://github.com/JasonCubic/jwt-demo/compare/linter-setup-pre-lint>
+* changes made to make the linters pass: <https://github.com/JasonCubic/jwt-demo/compare/linter-setup-pre-lint...lint-fix>
 
 ### Some vscode extensions to make linting easier
 
