@@ -1,0 +1,25 @@
+# Configuration file for Mega-Linter
+# See all available variables at https://nvuillam.github.io/mega-linter/configuration/ and in linters documentation
+
+APPLY_FIXES: none # all, none, or list of linter keys
+DEFAULT_BRANCH: main # Usually master or main
+PRINT_ALPACA: false # just decoration
+SHOW_ELAPSED_TIME: true # shows how long each linter took in the linter report summary table
+
+# keep mega linter from putting the report out on a file share name FILEIO on the internet for us
+FILEIO_REPORTER: false
+
+DISABLE_LINTERS:
+  - JAVASCRIPT_STANDARD # this is a competing js linter to airbnb that named itself "standard"
+  - JSON_PRETTIER # prettier is a code formatter that sometimes conflicts with airbnb styles
+  - YAML_PRETTIER # prettier is a code formatter that sometimes conflicts with airbnb styles
+  # - GIT_GIT_DIFF # fails if the "git diff --check" command returns anything
+
+# mega linter just needs to verify we have at least one .eslintrc.js file somewhere
+JAVASCRIPT_ES_RULES_PATH: /packages/jwt-demo-api/
+
+# we skip minified javascript and the frontend frameworks temporary build folder
+JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: (.*\.min\.js|\.nuxt/)
+
+# the import resolution checking is done by eslint-plugin-import at dev time
+JAVASCRIPT_ES_ARGUMENTS: "--rule 'import/no-unresolved: off'"

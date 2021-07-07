@@ -26,9 +26,14 @@
     "prod:down": "docker compose -f ./docker/docker-compose.prod.yml down --volumes --remove-orphans",
     "prod:refresh": "yarn run prod:rebuild && yarn run prod:up",
 
-    "clean": "node ./utils/packages-exec.js rm -rf node_modules && rm -rf node_modules"
+    "clean": "node ./utils/packages-exec.js rm -rf node_modules && rm -rf node_modules",
+    "local:lint:docker:compose": "bash ./utils/lint-docker-compose.sh",
+    "local:lint": "rm -rf ./report && yarn run mega-linter-runner -r v4 --flavor javascript"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "mega-linter-runner": "^4.36.0"
+  }
 }
