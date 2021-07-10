@@ -99,3 +99,6 @@ yarn.lock
 
 # for mega-linter's reports
 report/
+
+#semgrep's report
+semgrep-results.sarif

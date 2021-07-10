@@ -25,3 +25,9 @@ JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: (.*\.min\.js|\.nuxt/)
 
 # the import resolution checking is done by eslint-plugin-import at dev time
 JAVASCRIPT_ES_ARGUMENTS: "--rule 'import/no-unresolved: off'"
+
+# This file is written by and for vscode.  No need to lint it if developers are not interacting with it.
+JSON_PRETTIER_FILTER_REGEX_EXCLUDE: .cspell.json
+
+# This rule is opinionated, and I do not share the same opinion.  https://github.com/koalaman/shellcheck/wiki/SC2181
+BASH_SHELLCHECK_ARGUMENTS: "--exclude=SC2181"

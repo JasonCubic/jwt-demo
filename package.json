@@ -24,8 +24,9 @@
     "prod:down": "docker compose -f ./docker/docker-compose.yml down --volumes --remove-orphans",
     "prod:refresh": "yarn run prod:rebuild && yarn run prod:up",
     "clean": "node ./utils/packages-exec.js rm -rf node_modules && rm -rf node_modules",
-    "lint:local:interactive": "bash ./utils/lint-docker-compose.sh",
-    "lint:local": "rm -rf ./report && yarn run mega-linter-runner -r v4 --flavor javascript"
+    "lint:local:interactive": "rm -rf ./report && bash ./utils/lint-interactive.sh",
+    "lint:local": "rm -rf ./report && yarn run mega-linter-runner -r v4 --flavor javascript",
+    "scan:semgrep": "bash ./utils/semgrep-scan.sh"
   },
   "keywords": [],
   "author": "",

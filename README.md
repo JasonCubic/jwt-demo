@@ -68,6 +68,12 @@ To verify the linting isn't fixed yet: `prettier --config .prettierrc.json --che
 
 ---
 
+## To disable a semgrep rule using inline comments
+
+See: <https://semgrep.dev/docs/ignoring-findings/#inline-comments>
+
+---
+
 ## Note: debatable CSRF vulnerability for this demo in refresh-token route in auth microservice
 
 run this in browser console while logged in:
