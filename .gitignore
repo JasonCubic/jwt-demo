@@ -96,6 +96,7 @@ sonar-project.properties
 
 package-lock.json
 yarn.lock
+yarn*.lock
 
 # for mega-linter's reports
 report/

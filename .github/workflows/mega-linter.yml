@@ -25,7 +25,9 @@ jobs:
         with:
           github_token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
 
-  build:
+  # to see how to setup github actions for  mega-linter check how mega-linter does for its own repo
+  # https://github.com/nvuillam/mega-linter/blob/master/.github/workflows/mega-linter.yml
+  lint:
     name: Mega-Linter
     runs-on: ubuntu-latest
     steps:
@@ -50,42 +52,60 @@ jobs:
           VALIDATE_ALL_CODEBASE: true # Set ${{ github.event_name == &#39;push&#39; &amp;&amp; github.ref == &#39;refs/heads/master&#39; }} to validate only diff with master branch
           GITHUB_TOKEN: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           # ADD YOUR CUSTOM ENV VARIABLES HERE TO OVERRIDE VALUES OF .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
-      #
-      # # Upload Mega-Linter artifacts
-      # - name: Archive production artifacts
-      #   if: ${{ success() }} || ${{ failure() }}
-      #   uses: actions/upload-artifact@v2
+
+  semgrep:
+    name: Semgrep-scan
+    runs-on: ubuntu-latest
+    # Skip any PR created by dependabot to avoid permission issues
+    if: (github.actor != 'dependabot[bot]')
+    steps:
+      # Fetch project source
+      - uses: actions/checkout@v2
+      - uses: returntocorp/semgrep-action@v1 # https://semgrep.dev/docs/semgrep-ci/sample-ci-configs/#github-actions
+        with:
+          config: >- # more at semgrep.dev/explore
+            p/owasp-top-ten
+            p/jwt
+            p/xss
+            p/r2c
+            p/ci
+            p/secrets
+            p/javascript
+            p/nodejsscan
+            p/expressjs
+            p/insecure-transport
+            p/docker
+            p/dockerfile
+            p/docker-compose
+            p/sql-injection
+            p/command-injection
+            p/r2c-security-audit
+            p/eslint-plugin-security
+            p/r2c-best-practices
+            r/javascript.vue.security.audit.xss.templates.avoid-v-html.avoid-v-html
+        # == Optional settings in the `with:` block
+
+        # Instead of `config:`, use rules set in Semgrep App.
+        # Get your credentials from semgrep.dev/manage/settings.
+        #   publishDeployment: ${{ secrets.SEMGREP_DEPLOYMENT_ID }}
+        #   publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+        # Never fail the build due to findings on pushes.
+        # Instead, just collect findings for semgrep.dev/manage/findings
+        #   auditOn: push
+
+        # Upload findings to GitHub Advanced Security Dashboard [step 1/2]
+        # See also the next step.
+        #   generateSarif: "1"
+
+        # Change job timeout (default is 1800 seconds; set to 0 to disable)
+        # env:
+        #   SEMGREP_TIMEOUT: 300
+
+      # Upload findings to GitHub Advanced Security Dashboard [step 2/2]
+      # - name: Upload SARIF file for GitHub Advanced Security Dashboard
+      #   uses: github/codeql-action/upload-sarif@v1
       #   with:
-      #     name: Mega-Linter reports
-      #     path: |
-      #       report
-      #       mega-linter.log
+      #     sarif_file: semgrep.sarif
+      #   if: always()
       #
-      # # Create pull request if applicable (for now works only on PR from same repository, not from forks)
-      # - name: Create Pull Request with applied fixes
-      #   id: cpr
-      #   if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && !contains(github.event.head_commit.message, 'skip fix')
-      #   uses: peter-evans/create-pull-request@v3
-      #   with:
-      #     token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-      #     commit-message: "[Mega-Linter] Apply linters automatic fixes"
-      #     title: "[Mega-Linter] Apply linters automatic fixes"
-      #     labels: bot
-      #
-      # - name: Create PR output
-      #   if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && !contains(github.event.head_commit.message, 'skip fix')
-      #   run: |
-      #     echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-      #     echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
-      #
-      # # Push new commit if applicable (for now works only on PR from same repository, not from forks)
-      # - name: Prepare commit
-      #   if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/master' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && !contains(github.event.head_commit.message, 'skip fix')
-      #   run: sudo chown -Rc $UID .git/
-      #
-      # - name: Commit and push applied linter fixes
-      #   if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/master' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && !contains(github.event.head_commit.message, 'skip fix')
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
-      #     commit_message: "[Mega-Linter] Apply linters fixes"
