@@ -1,7 +1,7 @@
 ---
 # Mega-Linter GitHub Action configuration file
 # More info at https://nvuillam.github.io/mega-linter
-name: Mega-Linter
+name: continuous-integration
 
 on:
   # Trigger mega-linter at every push. Action will also be visible from Pull Requests to master
@@ -33,8 +33,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
-      # Mega-Linter
       - name: Mega-Linter
         id: ml
         # You can override Mega-Linter flavor used to have faster performances
@@ -45,9 +43,7 @@ jobs:
         env:
           # All available variables are described in documentation
           # https://nvuillam.github.io/mega-linter/configuration/
-          VALIDATE_ALL_CODEBASE: true # Set ${{ github.event_name == &#39;push&#39; &amp;&amp; github.ref == &#39;refs/heads/master&#39; }} to validate only diff with master branch
-          # GITHUB_TOKEN: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          # ADD YOUR CUSTOM ENV VARIABLES HERE TO OVERRIDE VALUES OF .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
+          VALIDATE_ALL_CODEBASE: true
 
   semgrep:
     name: Semgrep-scan
