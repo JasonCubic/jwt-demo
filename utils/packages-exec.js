@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
 
-const packagesFolder = path.resolve(__dirname, '..', './packages/');
+const packagesFolder = path.resolve(__dirname, '..', './packages/')
 fs.readdirSync(packagesFolder).forEach((subFolder) => {
   const subFolderPath = path.join(packagesFolder, subFolder);
   console.log(subFolderPath);
