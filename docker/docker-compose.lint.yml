@@ -1,9 +1,8 @@
 # https://github.com/nvuillam/mega-linter/issues/374
 services:
-
   mega-linter-api:
     image: nvuillam/mega-linter:v4
-    container_name: mega-linter-api
+    container_name: mega-linter
     volumes:
       # Anonymous volumes to prevent connection to windows node_modules folder (aka: bookmark volumes)
       - /tmp/lint/node_modules
