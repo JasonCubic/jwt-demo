@@ -99,3 +99,6 @@ yarn.lock
 
 # for mega-linter's reports
 report/
+
+*.sarif
+
