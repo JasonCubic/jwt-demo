@@ -1,5 +1,17 @@
 #!/bin/bash
 
+if [ ! -f .env ]; then
+  echo "ERROR: .env file does not exist.  Exiting script."
+  echo "You can rename the file .env.default to .env to resolve this error."
+  exit 1
+fi
+
+set -a
+# shellcheck source=.env
+# shellcheck disable=SC1091
+source <(sed <.env -e 's/[^[:print:]\t]//g')
+set +a
+
 RED="\033[31m"
 YELLOW="\033[33m"
 GREEN="\033[32m"
@@ -26,7 +38,7 @@ rm ./semgrep-results.sarif
 # docker run -it --rm -v "/$(pwd):/tmp/lint" --entrypoint="/bin/sh" nvuillam/mega-linter:v4
 
 print_yellow "\nstarting mega-linter lint.\n"
-docker run --rm \
+docker run -it --rm \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -v "/tmp/lint/node_modules" \
   -v "/tmp/lint/packages/jwt-demo-api/node_modules" \
@@ -34,6 +46,8 @@ docker run --rm \
   -v "/tmp/lint/packages/jwt-demo-frontend/node_modules" \
   -v "/tmp/lint/packages/jwt-demo-logs/node_modules" \
   -v "/$(pwd):/tmp/lint" \
+  -e "HTTP_PROXY=$HTTP_PROXY" \
+  -e "HTTPS_PROXY=$HTTPS_PROXY" \
   nvuillam/mega-linter-javascript:v4
 if [ $? -eq 0 ]; then
   print_green "\nlocal ci mega-linter succeeded.\n"
@@ -47,7 +61,11 @@ fi
 # docker run -it --rm -v "$(pwd):/src" --entrypoint="/bin/sh" returntocorp/semgrep
 
 print_yellow "\nstarting semgrep scan.\n"
-docker run -it --rm -v "/$(pwd):/src" returntocorp/semgrep:latest \
+docker run -it --rm \
+  -v "/$(pwd):/src" \
+  -e "HTTP_PROXY=$HTTP_PROXY" \
+  -e "HTTPS_PROXY=$HTTPS_PROXY" \
+  returntocorp/semgrep:latest \
   --config "p/owasp-top-ten" \
   --config "p/jwt" \
   --config "p/xss" \
@@ -78,4 +96,4 @@ else
 fi
 
 # if you want to use the same container that github actions uses for semgrep, this is the one: returntocorp/semgrep-action
-# but it does not output a sarif report file
+# but it does not output a sarif report file the same way

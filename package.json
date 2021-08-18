@@ -24,6 +24,7 @@
     "prod:down": "docker compose -f ./docker/docker-compose.yml down --volumes --remove-orphans",
     "prod:refresh": "yarn run prod:rebuild && yarn run prod:up",
     "clean": "node ./utils/packages-exec.js rm -rf node_modules && rm -rf node_modules",
+    "sonarqube:scan": "node ./utils/sonarqube-scan.js sonarqube_token_goes_here",
     "ci:local": "bash ./utils/ci-local-runner.sh"
   },
   "keywords": [],

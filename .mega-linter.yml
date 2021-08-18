@@ -12,7 +12,8 @@ FILEIO_REPORTER: false
 DISABLE_LINTERS:
   - JAVASCRIPT_STANDARD # this is a competing js linter to airbnb that named itself "standard"
   - EDITORCONFIG_EDITORCONFIG_CHECKER # this linter unable to allow unset line endings crlf/lf
-  # - GIT_GIT_DIFF # fails if the "git diff --check" command returns anything
+  - TYPESCRIPT_STANDARD # this project does not use typescript
+  - GIT_GIT_DIFF # fails if the "git diff --check" command returns anything
 
 # skip the frontend frameworks temporary build folder that has some html in it
 HTML_HTMLHINT_FILTER_REGEX_EXCLUDE: \.nuxt/
@@ -21,7 +22,7 @@ HTML_HTMLHINT_FILTER_REGEX_EXCLUDE: \.nuxt/
 JAVASCRIPT_ES_RULES_PATH: /packages/jwt-demo-api/
 
 # skip minified javascript and the frontend frameworks temporary build folder
-JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: (.*\.min\.js|\.nuxt/)
+JAVASCRIPT_ES_FILTER_REGEX_EXCLUDE: (.*\.min\.js|\.nuxt/|\.scannerwork/)
 
 # the import resolution checking is done by eslint-plugin-import at dev time
 JAVASCRIPT_ES_ARGUMENTS: "--rule 'import/no-unresolved: off'"
@@ -31,3 +32,6 @@ JSON_PRETTIER_FILTER_REGEX_EXCLUDE: .cspell.json
 
 # This rule is opinionated, and I do not share the same opinion.  https://github.com/koalaman/shellcheck/wiki/SC2181
 BASH_SHELLCHECK_ARGUMENTS: "--exclude=SC2181"
+
+# Some links goto temporary servers and fail, prefer to keep the check as a warning for information only
+MARKDOWN_MARKDOWN_LINK_CHECK_DISABLE_ERRORS: true
